@@ -35,10 +35,71 @@ ggplot(weather_df, aes(x = tmin, y = tmax)) +
 
 
 ```{r}
-weater_df |> 
+ggp_weather_scatterplot = 
+  weather_df |> 
   ggplot(aes(x = tmin, y = tmax)) + 
   geom_point()
 ```
+
+```{r}
+weather_df |> 
+  filter(is.na(tmax))
+```
+
+## Fancier scatterplots!
+
+```{r}
+weather_df |> 
+  ggplot(aes(x = tmin, y = tmax, color = name)) +  #applies color=name to everything that comes after this line of code
+  geom_point(alpha = .3, size = .8) + 
+  geom_smooth(se = FALSE)  #places smooth curve fit through the data points, se = false removes standard error bars
+```
+
+Where you define aesthetics can matter
+
+```{r}
+weather_df |> 
+  ggplot(aes(x = tmin, y = tmax)) +
+  geom_point(aes(color = name), alpha = .3, size = .8) + #color=name is placed differently here than the code chunk above, now only there is one smooth curve
+  geom_smooth(se = FALSE)  
+```
+
+use faceting real quick - making multiple of the same plot varied by a variable
+
+```{r}
+weather_df |> 
+  ggplot(aes(x = tmin, y = tmax, color = name)) +
+  geom_point(alpha = .3) +
+  geom_smooth(se = FALSE) +
+  facet_grid(. ~ name) #left of ~ "." means everything; the right of the ~ refers to separate plots by what column; to better see what this line of code does, can run the code chunk with and without it and see the difference in plots
+```
+
+```{r}
+weather_df |> 
+  ggplot(aes(x = date, y = tmax, color = name, size = prcp)) +
+  geom_point(alpha = .3) +
+  geom_smooth(se = FALSE) +
+  facet_grid(. ~ name)
+```
+
+Learning assessment:
+Write a code chain that starts with weather_df; focuses only on Central Park, converts temperatures to Fahrenheit, makes a scatterplot of min vs. max temperature, and overlays a linear regression line (using options in `geom_smooth()`).
+
+```{r}
+weather_df |> 
+  filter(name == "CentralPark_NY") |> 
+  mutate(
+    tmax_fahr = tmax * (9/5) + 32,
+    tmin_fahr = tmin * (9/5) + 32
+  ) |> 
+  ggplot(aes(x = tmin_fahr, y = tmax_fahr)) +
+  geom_point() +
+  geom_smooth(method = "lm", se = FALSE) #straight line instead of curvy line
+```
+
+
+
+
 
 
 
