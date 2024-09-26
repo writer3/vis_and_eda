@@ -5,6 +5,7 @@ output: github_document
 
 ```{r setup, include=FALSE}
 library(tidyverse)
+library(ggridges)
 ```
 
 ```{r}
@@ -51,7 +52,7 @@ weather_df |>
 ```{r}
 weather_df |> 
   ggplot(aes(x = tmin, y = tmax, color = name)) +  #applies color=name to everything that comes after this line of code
-  geom_point(alpha = .3, size = .8) + 
+  geom_point(alpha = .3, size = .8) + ##alpha .3 makes it more transparent
   geom_smooth(se = FALSE)  #places smooth curve fit through the data points, se = false removes standard error bars
 ```
 
@@ -60,7 +61,7 @@ Where you define aesthetics can matter
 ```{r}
 weather_df |> 
   ggplot(aes(x = tmin, y = tmax)) +
-  geom_point(aes(color = name), alpha = .3, size = .8) + #color=name is placed differently here than the code chunk above, now only there is one smooth curve
+  geom_point(aes(color = name), alpha = .3, size = .8) + #color=name is placed differently here than the code chunk above, now only there is one smooth curve. 
   geom_smooth(se = FALSE)  
 ```
 
@@ -97,9 +98,146 @@ weather_df |>
   geom_smooth(method = "lm", se = FALSE) #straight line instead of curvy line
 ```
 
+## Small things
+```{r}
+#plot the smooth curve without the datapoints
+weather_df |> 
+  ggplot(aes(x = date, y = tmax, color = name)) +
+  geom_smooth(se = FALSE)
+```
 
+```{r}
+weather_df |> 
+  ggplot(aes(x = tmin, y = tmax)) +
+  geom_hex()
+```
 
+```{r}
+weather_df |> 
+  ggplot(aes(x = tmin, y = tmax, color = "blue")) + #this will output red color but call it blue because ggplot does not know blue and will make something up
+  geom_point()
+```
 
+To actually have a blue plot
+```{r}
+weather_df |> 
+  ggplot(aes(x = tmin, y = tmax)) +
+  geom_point(color = "blue") 
+```
 
+## Univariate plots
 
+```{r}
+weather_df |> 
+  ggplot(aes(x = tmin)) + 
+  geom_histogram()
+```
+
+```{r}
+weather_df |> 
+  ggplot(aes(x = tmin, fill = name)) + 
+  geom_histogram(position = "dodge") #position = "dodge" puts bars next to each other rather than on top of each other
+```
+
+How would i fix this? maybe facet?
+
+```{r}
+weather_df |> 
+  ggplot(aes(x = tmin, fill = name)) +
+  geom_histogram() +
+  facet_grid(. ~ name)
+```
+
+maybe a density plot?
+
+```{r}
+weather_df |> 
+  ggplot(aes(x = tmin, fill = name)) +
+  geom_density(alpha = .3) 
+```
+
+maybe a box plot?
+
+```{r}
+weather_df |> 
+  ggplot(aes(x = name, y= tmin, fill = name)) +
+  geom_boxplot()
+```
+
+violin plots
+
+```{r}
+#violin plots takes density plot and butterflies them, can show things that are skewed, bimodal, or multimodal well in terms of distribution
+weather_df |> 
+  ggplot(aes(x = name, y = tmin, fill = name)) +
+  geom_violin()
+```
+
+ridge plot
+
+```{r}
+#this plot might be useful when you have multiple things you want to compare at the same time
+weather_df |> 
+  ggplot(aes(x = tmin, y = name)) +
+  geom_density_ridges()
+```
+
+Learning assessment: Make plots that compare precipitation across locations. Try a histogram, a density plot, a boxplot, a violin plot, and a ridgeplot; use aesthetic mappings to make your figure readable.
+```{r}
+weather_df |> 
+  ggplot(aes(x = prcp, fill = name)) +
+  geom_histogram() +
+  facet_grid(. ~ name)
+```
+
+```{r}
+weather_df |> 
+  ggplot(aes(x = prcp, fill = name)) +
+  geom_density(alpha = .3) 
+
+weather_df |> 
+  ggplot(aes(x = name, y= prcp, fill = name)) +
+  geom_boxplot()
+
+weather_df |>
+  filter(prcp > 10) |> 
+  ggplot(aes(x = prcp, fill = name)) +
+  geom_density(alpha = .3) 
+  
+```
+
+```{r}
+weather_df |> 
+  ggplot(aes(x = name, y = prcp, fill = name)) +
+  geom_violin()
+```
+
+```{r}
+weather_df |> 
+  ggplot(aes(x = prcp, y = name)) +
+  geom_density_ridges()
+```
+
+## Saving and embedding plots
+
+saving plots
+
+```{r}
+ggp_weather = 
+weather_df |> 
+  ggplot(aes(x = date, y = tmax, color = name)) +
+  geom_point()
+
+ggsave("ggp_weather.pdf", ggp_weather, width = 8, height = 6)
+```
+
+embedding plots
+
+```{r, fig.width = 6, fig.asp = .6} 
+#R decides the size of the embedded figure automatically, so can set the figure size
+#fig.asp refers to aspect ratio. 
+weather_df |> 
+  ggplot(aes(x = date, y = tmax, color = name)) +
+  geom_point()
+```
 

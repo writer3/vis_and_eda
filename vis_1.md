@@ -87,7 +87,7 @@ weather_df |>
 ``` r
 weather_df |> 
   ggplot(aes(x = tmin, y = tmax, color = name)) +  #applies color=name to everything that comes after this line of code
-  geom_point(alpha = .3, size = .8) + 
+  geom_point(alpha = .3, size = .8) + ##alpha .3 makes it more transparent
   geom_smooth(se = FALSE)  #places smooth curve fit through the data points, se = false removes standard error bars
 ```
 
@@ -106,7 +106,7 @@ Where you define aesthetics can matter
 ``` r
 weather_df |> 
   ggplot(aes(x = tmin, y = tmax)) +
-  geom_point(aes(color = name), alpha = .3, size = .8) + #color=name is placed differently here than the code chunk above, now only there is one smooth curve
+  geom_point(aes(color = name), alpha = .3, size = .8) + #color=name is placed differently here than the code chunk above, now only there is one smooth curve. 
   geom_smooth(se = FALSE)  
 ```
 
@@ -201,3 +201,258 @@ weather_df |>
     ## `geom_smooth()` using formula = 'y ~ x'
 
 ![](vis_1_files/figure-gfm/unnamed-chunk-9-1.png)<!-- -->
+
+## Small things
+
+``` r
+#plot the smooth curve without the datapoints
+weather_df |> 
+  ggplot(aes(x = date, y = tmax, color = name)) +
+  geom_smooth(se = FALSE)
+```
+
+    ## `geom_smooth()` using method = 'loess' and formula = 'y ~ x'
+
+    ## Warning: Removed 17 rows containing non-finite outside the scale range
+    ## (`stat_smooth()`).
+
+![](vis_1_files/figure-gfm/unnamed-chunk-10-1.png)<!-- -->
+
+``` r
+weather_df |> 
+  ggplot(aes(x = tmin, y = tmax)) +
+  geom_hex()
+```
+
+    ## Warning: Removed 17 rows containing non-finite outside the scale range
+    ## (`stat_binhex()`).
+
+![](vis_1_files/figure-gfm/unnamed-chunk-11-1.png)<!-- -->
+
+``` r
+weather_df |> 
+  ggplot(aes(x = tmin, y = tmax, color = "blue")) + #this will output red color but call it blue because ggplot does not know blue and will make something up
+  geom_point()
+```
+
+    ## Warning: Removed 17 rows containing missing values or values outside the scale range
+    ## (`geom_point()`).
+
+![](vis_1_files/figure-gfm/unnamed-chunk-12-1.png)<!-- -->
+
+To actually have a blue plot
+
+``` r
+weather_df |> 
+  ggplot(aes(x = tmin, y = tmax)) +
+  geom_point(color = "blue") 
+```
+
+    ## Warning: Removed 17 rows containing missing values or values outside the scale range
+    ## (`geom_point()`).
+
+![](vis_1_files/figure-gfm/unnamed-chunk-13-1.png)<!-- -->
+
+## Univariate plots
+
+``` r
+weather_df |> 
+  ggplot(aes(x = tmin)) + 
+  geom_histogram()
+```
+
+    ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
+
+    ## Warning: Removed 17 rows containing non-finite outside the scale range
+    ## (`stat_bin()`).
+
+![](vis_1_files/figure-gfm/unnamed-chunk-14-1.png)<!-- -->
+
+``` r
+weather_df |> 
+  ggplot(aes(x = tmin, fill = name)) + 
+  geom_histogram(position = "dodge") #position = "dodge" puts bars next to each other rather than on top of each other
+```
+
+    ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
+
+    ## Warning: Removed 17 rows containing non-finite outside the scale range
+    ## (`stat_bin()`).
+
+![](vis_1_files/figure-gfm/unnamed-chunk-15-1.png)<!-- -->
+
+How would i fix this? maybe facet?
+
+``` r
+weather_df |> 
+  ggplot(aes(x = tmin, fill = name)) +
+  geom_histogram() +
+  facet_grid(. ~ name)
+```
+
+    ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
+
+    ## Warning: Removed 17 rows containing non-finite outside the scale range
+    ## (`stat_bin()`).
+
+![](vis_1_files/figure-gfm/unnamed-chunk-16-1.png)<!-- -->
+
+maybe a density plot?
+
+``` r
+weather_df |> 
+  ggplot(aes(x = tmin, fill = name)) +
+  geom_density(alpha = .3) 
+```
+
+    ## Warning: Removed 17 rows containing non-finite outside the scale range
+    ## (`stat_density()`).
+
+![](vis_1_files/figure-gfm/unnamed-chunk-17-1.png)<!-- -->
+
+maybe a box plot?
+
+``` r
+weather_df |> 
+  ggplot(aes(x = name, y= tmin, fill = name)) +
+  geom_boxplot()
+```
+
+    ## Warning: Removed 17 rows containing non-finite outside the scale range
+    ## (`stat_boxplot()`).
+
+![](vis_1_files/figure-gfm/unnamed-chunk-18-1.png)<!-- -->
+
+violin plots
+
+``` r
+#violin plots takes density plot and butterflies them, can show things that are skewed, bimodal, or multimodal well in terms of distribution
+weather_df |> 
+  ggplot(aes(x = name, y = tmin, fill = name)) +
+  geom_violin()
+```
+
+    ## Warning: Removed 17 rows containing non-finite outside the scale range
+    ## (`stat_ydensity()`).
+
+![](vis_1_files/figure-gfm/unnamed-chunk-19-1.png)<!-- -->
+
+ridge plot
+
+``` r
+#this plot might be useful when you have multiple things you want to compare at the same time
+weather_df |> 
+  ggplot(aes(x = tmin, y = name)) +
+  geom_density_ridges()
+```
+
+    ## Picking joint bandwidth of 1.41
+
+    ## Warning: Removed 17 rows containing non-finite outside the scale range
+    ## (`stat_density_ridges()`).
+
+![](vis_1_files/figure-gfm/unnamed-chunk-20-1.png)<!-- -->
+
+Learning assessment: Make plots that compare precipitation across
+locations. Try a histogram, a density plot, a boxplot, a violin plot,
+and a ridgeplot; use aesthetic mappings to make your figure readable.
+
+``` r
+weather_df |> 
+  ggplot(aes(x = prcp, fill = name)) +
+  geom_histogram() +
+  facet_grid(. ~ name)
+```
+
+    ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
+
+    ## Warning: Removed 15 rows containing non-finite outside the scale range
+    ## (`stat_bin()`).
+
+![](vis_1_files/figure-gfm/unnamed-chunk-21-1.png)<!-- -->
+
+``` r
+weather_df |> 
+  ggplot(aes(x = prcp, fill = name)) +
+  geom_density(alpha = .3) 
+```
+
+    ## Warning: Removed 15 rows containing non-finite outside the scale range
+    ## (`stat_density()`).
+
+![](vis_1_files/figure-gfm/unnamed-chunk-22-1.png)<!-- -->
+
+``` r
+weather_df |> 
+  ggplot(aes(x = name, y= prcp, fill = name)) +
+  geom_boxplot()
+```
+
+    ## Warning: Removed 15 rows containing non-finite outside the scale range
+    ## (`stat_boxplot()`).
+
+![](vis_1_files/figure-gfm/unnamed-chunk-22-2.png)<!-- -->
+
+``` r
+weather_df |>
+  filter(prcp > 10) |> 
+  ggplot(aes(x = prcp, fill = name)) +
+  geom_density(alpha = .3) 
+```
+
+![](vis_1_files/figure-gfm/unnamed-chunk-22-3.png)<!-- -->
+
+``` r
+weather_df |> 
+  ggplot(aes(x = name, y = prcp, fill = name)) +
+  geom_violin()
+```
+
+    ## Warning: Removed 15 rows containing non-finite outside the scale range
+    ## (`stat_ydensity()`).
+
+![](vis_1_files/figure-gfm/unnamed-chunk-23-1.png)<!-- -->
+
+``` r
+weather_df |> 
+  ggplot(aes(x = prcp, y = name)) +
+  geom_density_ridges()
+```
+
+    ## Picking joint bandwidth of 9.22
+
+    ## Warning: Removed 15 rows containing non-finite outside the scale range
+    ## (`stat_density_ridges()`).
+
+![](vis_1_files/figure-gfm/unnamed-chunk-24-1.png)<!-- -->
+
+## Saving and embedding plots
+
+saving plots
+
+``` r
+ggp_weather = 
+weather_df |> 
+  ggplot(aes(x = date, y = tmax, color = name)) +
+  geom_point()
+
+ggsave("ggp_weather.pdf", ggp_weather, width = 8, height = 6)
+```
+
+    ## Warning: Removed 17 rows containing missing values or values outside the scale range
+    ## (`geom_point()`).
+
+embedding plots
+
+``` r
+#R decides the size of the embedded figure automatically, so can set the figure size
+#fig.asp refers to aspect ratio. 
+weather_df |> 
+  ggplot(aes(x = date, y = tmax, color = name)) +
+  geom_point()
+```
+
+    ## Warning: Removed 17 rows containing missing values or values outside the scale range
+    ## (`geom_point()`).
+
+![](vis_1_files/figure-gfm/unnamed-chunk-26-1.png)<!-- -->
