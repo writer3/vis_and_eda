@@ -311,3 +311,46 @@ ggp_tmax_date =
     ## (`geom_point()`).
 
 ![](vis_2_files/figure-gfm/unnamed-chunk-15-1.png)<!-- -->
+
+## Data manipulation
+
+When you take a categorical variable and you put that into the columns,
+R has to know what to place first. R’s default is by alphabetical order.
+You can control the order by using `mutate` to manipulate factor
+variable.
+
+``` r
+weather_df |> 
+  mutate(name = fct_relevel(name, c("Molokai_HI", "CentralPark_NY", "Waterhole_WA"))) |>   #defining the order of plots by categorical variable
+  ggplot(aes(x = name, y = tmax, fill = name)) +
+  geom_violin()
+```
+
+    ## Warning: Removed 17 rows containing non-finite outside the scale range
+    ## (`stat_ydensity()`).
+
+![](vis_2_files/figure-gfm/unnamed-chunk-16-1.png)<!-- -->
+
+PULSE data next.
+
+``` r
+pulse_df = 
+  read_sas("data/public_pulse_data.sas7bdat") |> 
+  janitor::clean_names() |> 
+  pivot_longer(
+    cols = bdi_score_bl:bdi_score_12m,
+    names_to = "visit",
+    values_to = "bdi_score",
+    names_prefix = "bdi_score_"
+  ) |>  
+  mutate(visit = ifelse(visit == "bl", "00m", visit)) #changing bl to 00m
+
+pulse_df |> 
+  ggplot(aes(x = visit, y = bdi_score)) +
+  geom_boxplot()
+```
+
+    ## Warning: Removed 879 rows containing non-finite outside the scale range
+    ## (`stat_boxplot()`).
+
+![](vis_2_files/figure-gfm/unnamed-chunk-17-1.png)<!-- -->
