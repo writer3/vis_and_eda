@@ -194,3 +194,46 @@ ggp_scatterplot +
     ## (`geom_point()`).
 
 ![](vis_2_files/figure-gfm/unnamed-chunk-11-1.png)<!-- -->
+
+Learning Assessment: Revisit the plot showing tmax against date for each
+location. Use labels, scale options, and theme changes to improve the
+readability of this plot
+
+New Scatterplot
+
+``` r
+weather_df |> 
+  ggplot(aes(x = date, y = tmax, color = name, size = prcp)) +
+  geom_point(alpha = .3) +
+  geom_smooth(se = FALSE) +
+  viridis::scale_color_viridis(discrete = TRUE) +
+  labs(
+    x = "Date",
+    y = "Maximum Temp (C)",
+    title = "Seasonal variation in Max Temp"
+  ) +
+  theme_classic() +
+  theme(legend.position = "bottom")
+```
+
+    ## Warning: Using `size` aesthetic for lines was deprecated in ggplot2 3.4.0.
+    ## ℹ Please use `linewidth` instead.
+    ## This warning is displayed once every 8 hours.
+    ## Call `lifecycle::last_lifecycle_warnings()` to see where this warning was
+    ## generated.
+
+    ## `geom_smooth()` using method = 'loess' and formula = 'y ~ x'
+
+    ## Warning: Removed 17 rows containing non-finite outside the scale range
+    ## (`stat_smooth()`).
+
+    ## Warning: The following aesthetics were dropped during statistical transformation: size.
+    ## ℹ This can happen when ggplot fails to infer the correct grouping structure in
+    ##   the data.
+    ## ℹ Did you forget to specify a `group` aesthetic or to convert a numerical
+    ##   variable into a factor?
+
+    ## Warning: Removed 19 rows containing missing values or values outside the scale range
+    ## (`geom_point()`).
+
+![](vis_2_files/figure-gfm/unnamed-chunk-12-1.png)<!-- -->
