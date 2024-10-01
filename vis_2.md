@@ -212,7 +212,7 @@ weather_df |>
     y = "Maximum Temp (C)",
     title = "Seasonal variation in Max Temp"
   ) +
-  theme_classic() +
+  theme_minimal() +
   theme(legend.position = "bottom")
 ```
 
@@ -237,3 +237,77 @@ weather_df |>
     ## (`geom_point()`).
 
 ![](vis_2_files/figure-gfm/unnamed-chunk-12-1.png)<!-- -->
+
+Extra bonus stuff in `ggplot`
+
+Use different datasets in different `geom`s
+
+``` r
+central_park_df = 
+  weather_df |> 
+  filter(name == "CentralPark_NY")
+
+molokai_df = 
+  weather_df |> 
+  filter(name == "Molokai_HI")
+
+molokai_df |> 
+  ggplot(aes(x = date, y = tmax, color = name)) +
+  geom_point() + #scatterplot for molokai 
+  geom_line(data = central_park_df) #line plot for central park
+```
+
+    ## Warning: Removed 1 row containing missing values or values outside the scale range
+    ## (`geom_point()`).
+
+![](vis_2_files/figure-gfm/unnamed-chunk-13-1.png)<!-- -->
+
+## Multiple panels
+
+``` r
+weather_df |> 
+  ggplot(aes(x = tmax, fill = name)) +
+  geom_density() +
+  facet_grid(. ~ name)
+```
+
+    ## Warning: Removed 17 rows containing non-finite outside the scale range
+    ## (`stat_density()`).
+
+![](vis_2_files/figure-gfm/unnamed-chunk-14-1.png)<!-- -->
+
+``` r
+ggp_tmax_tmin = 
+  weather_df |> 
+  ggplot(aes(x = tmin, y = tmax, color = name)) +
+  geom_point(alpha = .3)
+
+ggp_tmax_density = 
+  weather_df |> 
+  ggplot(aes(x = tmax, fill = name)) +
+  geom_density(alpha = .3)
+
+ggp_tmax_date =
+  weather_df |> 
+  ggplot(aes(x = date, y = tmax, color = name)) +
+  geom_point () +
+  geom_smooth(se = FALSE)
+
+(ggp_tmax_tmin + ggp_tmax_density) / ggp_tmax_date #using patchwork
+```
+
+    ## Warning: Removed 17 rows containing missing values or values outside the scale range
+    ## (`geom_point()`).
+
+    ## Warning: Removed 17 rows containing non-finite outside the scale range
+    ## (`stat_density()`).
+
+    ## `geom_smooth()` using method = 'loess' and formula = 'y ~ x'
+
+    ## Warning: Removed 17 rows containing non-finite outside the scale range
+    ## (`stat_smooth()`).
+
+    ## Warning: Removed 17 rows containing missing values or values outside the scale range
+    ## (`geom_point()`).
+
+![](vis_2_files/figure-gfm/unnamed-chunk-15-1.png)<!-- -->
