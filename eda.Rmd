@@ -1,0 +1,118 @@
+---
+title: "EDA"
+output: github_document
+---
+
+```{r setup, include=FALSE}
+library(tidyverse)
+```
+
+Import weather data
+
+```{r}
+weather_df = 
+  rnoaa::meteo_pull_monitors(
+    c("USW00094728", "USW00022534", "USS0023B17S"),
+    var = c("PRCP", "TMIN", "TMAX"), 
+    date_min = "2021-01-01",
+    date_max = "2022-12-31") |>
+  mutate(
+    name = case_match(
+      id, 
+      "USW00094728" ~ "CentralPark_NY", 
+      "USW00022534" ~ "Molokai_HI",
+      "USS0023B17S" ~ "Waterhole_WA"),
+    tmin = tmin / 10,
+    tmax = tmax / 10,
+    month = floor_date(date, unit = "month")) |> 
+  select(name, id, everything())
+```
+
+
+Let's make some plots
+
+```{r}
+weather_df |> 
+  ggplot(aes(x = prcp)) +
+  geom_histogram()
+```
+
+
+```{r}
+weather_df |> 
+  filter(prcp > 1000) #since the initial plot shows outliers, so check if it's a data entry error or real
+```
+
+
+```{r}
+weather_df |> 
+  filter(tmax > 20, tmax <30) |> 
+  ggplot(aes(x = tmin, y = tmax, color = name, shape = name)) +
+  geom_point()
+#now check the plot to see if there are any outliers
+```
+
+
+## group_by()
+
+```{r}
+weather_df |> 
+  group_by(name, month)
+```
+
+
+counting stuff
+
+```{r}
+weather_df |> 
+  group_by(month) |> 
+  summarize(
+    n_obs = n(), #n() to count
+    n_dist = n_distinct(month))
+```
+
+
+```{r}
+weather_df |> 
+  group_by(name, month) |> 
+  summarize(
+    n_obs = n())
+```
+
+
+```{r}
+weather_df |> 
+  count(name) #can also use this specifically for counting OR above codes.
+```
+
+
+
+
+## 2x2
+
+```{r}
+weather_df |> 
+  drop_na(tmax) |> #because without this code, we are finding NA's under cold
+  filter(name != "Molokai_HI") |> 
+  mutate(
+    cold = case_when(
+      tmax < 5 ~ "cold",
+      tmax >= 5 ~ "not cold"
+    )
+  ) |> 
+  group_by(name, cold) |> 
+  summarize(count = n()) #count is number of obs
+
+weather_df |> 
+  drop_na(tmax) |> #because without this code, we are finding NA's under cold
+  filter(name != "Molokai_HI") |> 
+  mutate(
+    cold = case_when(
+      tmax < 5 ~ "cold",
+      tmax >= 5 ~ "not cold"
+    )
+  ) |> 
+  janitor::tabyl(name, cold) #another way to compute a 2x2 table using janitor package
+```
+
+
