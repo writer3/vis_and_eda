@@ -159,6 +159,8 @@ weather_df |>
     names_from = name,
     values_from = mean_tmax #making data untidy to be presentable 
   ) |> 
-  knitr::kable(digits = 3) #digits = changing decimal points
+  knitr::kable(
+    digits = 3, #digits = changing decimal points
+    col.names = c("Month", "Central Park", "Molokai", "Waterhole")) 
 ```
 
