@@ -316,6 +316,6 @@ fas_df |>
     names_from = tx_day,
     values_from = mean_pivot
   ) |> 
-  knitr::kable(digits = 2)
+  knitr::kable(digits = 3)
 ```
 

@@ -597,7 +597,7 @@ fas_df |>
   drop_na(dose) |> #without the drop code, one row has NA in it, but sake of making it easy for the assessment, can just drop.
   group_by(dose, tx_day) |> 
   summarize(mean_pivot = mean(pd_pivot, na.rm = TRUE)) |> 
-  pivot_wider(
+  pivot_wider(  #make it into a presentable format
     names_from = tx_day,
     values_from = mean_pivot
   ) |> 
