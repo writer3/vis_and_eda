@@ -164,3 +164,97 @@ weather_df |>
     col.names = c("Month", "Central Park", "Molokai", "Waterhole")) 
 ```
 
+
+
+## grouped mutates
+
+```{r}
+weather_df |> 
+  mutate(mean_tmax = mean(tmax, na.rm = TRUE)) #mean tmax computes avg tmax across all tmax obs in the dataset and creating a new column called mean_tmax
+```
+
+Once you add a grouping layer, tidyverse will remember that grouping.
+This can be helpful, but be careful not to forget that you had grouped. 
+Use group_by exclusively to do an exploratory analysis, and NOT for data cleaning process(because it will be permanent).
+
+```{r}
+weather_df |> 
+  group_by(name) |> #if you group_by name first, tmax is different
+  mutate(mean_tmax = mean(tmax, na.rm = TRUE))
+```
+
+```{r}
+weather_df |> 
+  group_by(name) |> #if you group_by name first, tmax is different
+  mutate(
+    mean_tmax = mean(tmax, na.rm = TRUE),
+    centered_tmax = tmax - mean_tmax)|> 
+  ggplot(aes(x = date, y = centered_tmax, color = name)) +
+  geom_point()
+```
+
+
+  Find hottest / coldest days using window function
+
+```{r}
+weather_df |> 
+  mutate(
+    temp_rank = min_rank(tmax) 
+  ) |> 
+  filter(temp_rank < 4) #top 4 coldest days
+```
+
+```{r}
+weather_df |> 
+  group_by(name) |> 
+  mutate(
+    temp_rank = min_rank(tmax)
+  ) |> 
+  filter(temp_rank < 4)
+```
+  
+  
+```{r}
+weather_df |> 
+  group_by(name) |> 
+  mutate(
+    temp_rank = min_rank(desc(tmax)) #if same value, will rank the same
+  ) |> 
+  filter(temp_rank < 4)
+
+#can also do below to do the same.
+
+weather_df |> 
+  group_by(name) |> 
+  filter(min_rank(tmax) < 4) |> 
+  arrange(tmax)
+```
+
+
+```{r}
+weather_df |> 
+  group_by(name) |> 
+  mutate(
+    lagged_tmax = lag(tmax), #lag_tmax gets the temp the day before the tmax day
+    temp_change = tmax - lagged_tmax
+  ) |> 
+  filter(min_rank(temp_change) < 3) 
+
+#Jan 1 won't have a lagged_temp since its the first day
+#BEFORE YOU USE THIS: lag creates a column from the value from the day before, so if your data is not in order, then it will not be smart enough to catch that. 
+```
+
+
+```{r}
+weather_df |> 
+  group_by(name) |> 
+  mutate(
+    lagged_tmax = lag(tmax), #lag_tmax gets the temp the day before the tmax day
+    temp_change = tmax - lagged_tmax
+  ) |> 
+  summarize(
+    sd_tmax_change = sd(temp_change, na.rm = TRUE)
+  ) #can see how much day to day variation do you see
+```
+
+
