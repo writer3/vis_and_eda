@@ -116,3 +116,49 @@ weather_df |>
 ```
 
 
+## general numeric summaries.
+
+let's try some other useful summaries.
+
+```{r}
+weather_df |> 
+  group_by(name, month) |> 
+  summarize(
+    mean_tmax = mean(tmax, na.rm = TRUE), #na.rm=TRUE to remove missing obs before computing the mean
+    median_tmin = median(tmin, na.rm = TRUE),
+    sd_prcp = sd(prcp, na.rm = TRUE)
+    )
+```
+
+
+  summarize and then plot...
+
+```{r}
+weather_df |> 
+  group_by(name, month) |> 
+  summarize(
+    mean_tmax = mean(tmax, na.rm = TRUE),
+    median_tmin = median(tmin, na.rm = TRUE),
+    sd_prcp = sd(prcp, na.rm = TRUE)
+    ) |> 
+  ggplot(aes(x = month, y = mean_tmax, color = name)) +
+  geom_point() +
+  geom_line()
+```
+
+
+format for readers
+
+```{r}
+weather_df |> 
+  group_by(name, month) |> 
+  summarize(
+    mean_tmax = mean(tmax, na.rm = TRUE)
+    ) |> 
+  pivot_wider(
+    names_from = name,
+    values_from = mean_tmax #making data untidy to be presentable 
+  ) |> 
+  knitr::kable(digits = 3) #digits = changing decimal points
+```
+
